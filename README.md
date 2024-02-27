@@ -109,7 +109,7 @@ source envs/bin/activate
 ```
 #### 5. Install requirements
 ```bash
-cd november-2023-hiring-muskan399/
+cd log-query-ingestor/
 pip install -r requirements.txt
 ```
 #### 7. Edit project settings: Note currently it already has config for RDS.
