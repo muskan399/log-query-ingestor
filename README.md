@@ -18,41 +18,26 @@
 *** See the bottom of this document for the declaration of the reference variables
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
 
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
+  <a href="https://github.com/github_username/repo_name">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Best-README-Template</h3>
+<h3 align="center">Log Ingestor & Query Builder</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    This is a Django based project which consists of 2 apps for log ingestion and query evaluation. For the log ingestion RDS is used.
     <br />
-    <a href="https://github.com/othneildrew/Best-README-Template"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/othneildrew/Best-README-Template">View Demo</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/othneildrew/Best-README-Template/issues">Request Feature</a>
+    
   </p>
 </div>
 
-
-
+<br>
+<br>
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -79,43 +64,18 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+It is a log ingestor system that can efficiently handle vast volumes of log data, and offer a simple interface for querying this data using full-text search or specific field filters.
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
 
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
-
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have contributed to expanding this template!
-
-Use the `BLANK_README.md` to get started.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
 ### Built With
-
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+* Django
+* RDS
 
 
 <!-- GETTING STARTED -->
@@ -126,81 +86,312 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
+#### 1. Install Python
+Install ```python-3(python 3.10)``` and ```python-pip(pip 23.3.1 )```. Follow the steps from the below reference document based on your Operating System.
+Reference: [https://docs.python-guide.org/starting/installation/](https://docs.python-guide.org/starting/installation/)
+
+#### 2. Install MySQL
+Install ```mysql-8.0.35```. Follow the steps form the below reference document based on your Operating System.
+Reference: [https://dev.mysql.com/doc/refman/5.5/en/](https://dev.mysql.com/doc/refman/5.5/en/)
+#### 3. Setup virtual environment
+```bash
+# Install virtual environment
+sudo pip install virtualenv
+
+# Make a directory
+mkdir envs
+
+# Create virtual environment
+virtualenv ./envs/
+
+# Activate virtual environment
+source envs/bin/activate
+```
+#### 5. Install requirements
+```bash
+cd november-2023-hiring-muskan399/
+pip install -r requirements.txt
+```
+#### 7. Edit project settings: Note currently it already has config for RDS.
+```bash
+# open settings file
+vim log_ingestor_system/settings.py
+
+# Edit Database configurations with your MySQL configurations.
+# Search for DATABASES section.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'world',
+        'USER': '<mysql-user>',
+        'PASSWORD': '<mysql-password>',
+        'HOST': '<mysql-host>',
+        'PORT': '<mysql-port>',
+    }
+}
+# save the file
+```
+#### 8. Run the server
+```bash
+# Make migrations
+python3 manage.py makemigrations
+python3 manage.py migrate
+
+# Run the server
+python manage.py runserver
+
+# your server is up on port 3000
+```
+
+### RDS Table structure and indexes
+1. Database name: log_store
+2. Table name: log_data
+3. Table structure:
+```
++-------+-------------------------+----------------+----------------------------+---------------------------+----------+-----------+------------------+-----------+
+| level | message                 | resourceId     | timestamp                  | traceId                   | spanId   | commit    | parentResourceId | projectId |
++-------+-------------------------+----------------+----------------------------+---------------------------+----------+-----------+------------------+-----------+
+| error | Server Error            | server-1234675 | 2022-12-16 08:00:00.000000 | abc-qddyz-32334           | span-456 | 5e5342f   | server-0987      |           |
+| error | Failed to connect to DB | server-1234675 | 2023-12-16 08:00:00.000000 | abc-xyz-123               | span-456 | 5e5342f   | server-0987      | 1         |
+| error | Server Error            | server-1234675 | 2023-12-16 08:00:00.000000 | abc-xyz-32334             | span-456 | 5e5342f   | server-0987      | 1         |
+| info  | Successfully updated    | server-1234675 | 2022-12-11 08:00:00.000000 | abcd-123                  | span-123 | 21cds342f | server-1         |           |
+| info  | Resource Created        | server-1234675 | 2022-12-16 08:00:00.000000 | rfvgrgc-qddyz-32334       | span-456 | 5e5342f   | server-0987      |           |
+| info  | Successfully updated    | server-1234675 | 2022-12-16 08:00:00.000000 | rfvgrgc-qdfddddddyz-32334 | span-456 | 5e5342f   | server-0987      |           |
++-------+-------------------------+----------------+----------------------------+---------------------------+----------+-----------+------------------+-----------+
+```
+4. Indexes on log_data:
+* Note: There is a `composite index on timestamp and projectId`, since in every query these 2 values will be compulsory added in filters.
+* I have added 1 extra attribute for projectId so that we have data isolation, so that user can see data from authorised project only, further we can add a security layer based on this projectId, for now we can avoid it also and consider there is just `index on timestamp`.
+```
+mysql> SHOW INDEX FROM log_data;
++----------+------------+-------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table    | Non_unique | Key_name                | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++----------+------------+-------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| log_data |          0 | PRIMARY                 |            1 | traceId     | A         |           6 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| log_data |          1 | idx_timestamp_projectId |            1 | timestamp   | A         |           3 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| log_data |          1 | idx_timestamp_projectId |            2 | projectId   | A         |           3 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
++----------+------------+-------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+```
+5. Steps to connect to RDS:
+* Connect to AWS RDS using mysql client.
+```mysql
+ mysql -h log-store.cdmwahb69xvs.ap-south-1.rds.amazonaws.com -u admin -p log_store
+```
+Password: 12345678
+
+* Go to log_store database;
+```
+USE log_store;
+SELECT * FROM log_data;
+```
+
+### Log Ingestion
+Send a POST request to  `http://localhost:3000/ingest/`
+   
+``` sh
+curl -X POST -H "Content-Type: application/json" -d '{
+  "level": "info",
+  "message": "Successfully updated",
+  "resourceId": "server-1234675",
+  "timestamp": "2022-12-11T08:00:00Z",
+  "traceId": "abcd-123",
+  "spanId": "span-123",
+  "commit": "21cds342f",
+  "metadata": {"parentResourceId": "server-1"}
+}' http://localhost:3000/ingest/
   ```
+Response will be:
+```
+{"status": "success", "message": "Log ingested successfully"}
+```
 
-### Installation
+### Query Interface
+Allowed Operations:
+```* EQUALS: level, message, resourceId, traceId, spanId, commit, parentResourceId
+* NOT EQUALS: level, message, resourceId, traceId, spanId, commit, parentResourceId
+* CONTAINS: level, message
+* NOT CONTAINS: level, message
+* SORT: timestamp, level, message
+* GROUPBY: level, message
+* BETWEEN(Timerange)
+```
+Use this script to open the cmd line cli.
+```
+python3 managment/command_line_cli.py
+```
+<details>
+  <summary>With all the default values for filter, time and sort</summary>
+  
+ ```
+ =============================================================
+Hello! Use this CLI to filter,search,sort and groupby
+=============================================================
 
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
+Enter start time (e.g., 2020-02-01T00:00:00) [Default: 2020-02-01T00:00:00]: 
+Enter end time (e.g., 2020-02-05T00:00:00) [Default: 2024-02-05T00:00:00]: 
+Enter group_by (e.g., level) [Press Enter to skip]: 
+Enter fields (e.g., message,level) [Default: message,level,resourceId,traceId,spanId,commit,parentResourceId,timestamp]: 
+Enter sort (e.g., timestamp) [Default: timestamp]: 
+Enter page[limit] [Default: 10]: 
+Enter the project id [Default: 1]: 
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+Enter filter name (or press Enter to finish):
+Allowed filters are:
+1. level(equals,not equals, contains, not contains)
+2. message(equals, not equals, contains, not contains)
+3. resourceId(equals, not equals)
+4. traceId(equals, not equals)
+5. spanId(equals, not equals)
+6. commit(equals, not equals)
+7. parentResourceId(equals, not equals)
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+API call successful(Note: Records are paginated)
+log_events : {'parentResourceId': 'server-1', 'idps_message': 'Successfully updated', 'level': 'info', 'resourceId': 'server-1234675', 'traceId': 'abcd-123', 'timestamp': '2022-12-11T08:00:00', 'spanId': 'span-123', 'commit': '21cds342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Server Error', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-qddyz-32334', 'timestamp': '2022-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Resource Created', 'level': 'info', 'resourceId': 'server-1234675', 'traceId': 'rfvgrgc-qddyz-32334', 'timestamp': '2022-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Successfully updated', 'level': 'info', 'resourceId': 'server-1234675', 'traceId': 'rfvgrgc-qdfddddddyz-32334', 'timestamp': '2022-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Failed to connect to DB', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-xyz-123', 'timestamp': '2023-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Server Error', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-xyz-32334', 'timestamp': '2023-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+
+ ```
+  
+</details>
+<details>
+  <summary>With Filters(Equals, Contains, timerange): start_time= 2021-01-01T00:00:00  and end_time= 2024-01-01T00:00:00 and filter[level]=error and filter[message__icontains]=ser and sort=timestamp(asc)</summary>
+  
+ ```
+ =============================================================
+Hello! Use this CLI to filter,search,sort and groupby
+=============================================================
+
+Enter start time (e.g., 2020-02-01T00:00:00) [Default: 2020-02-01T00:00:00]: 
+Enter end time (e.g., 2020-02-05T00:00:00) [Default: 2024-02-05T00:00:00]: 
+Enter group_by (e.g., level) [Press Enter to skip]: 
+Enter fields (e.g., message,level) [Default: message,level,resourceId,traceId,spanId,commit,parentResourceId,timestamp]: 
+Enter sort (e.g., timestamp) [Default: timestamp]: 
+Enter page[limit] [Default: 10]: 
+Enter the project id [Default: 1]: 
+
+Enter filter name (or press Enter to finish):
+Allowed filters are:
+1. level(equals,not equals, contains, not contains)
+2. message(equals, not equals, contains, not contains)
+3. resourceId(equals, not equals)
+4. traceId(equals, not equals)
+5. spanId(equals, not equals)
+6. commit(equals, not equals)
+7. parentResourceId(equals, not equals)
+
+API call successful(Note: Records are paginated)
+log_events : {'parentResourceId': 'server-1', 'idps_message': 'Successfully updated', 'level': 'info', 'resourceId': 'server-1234675', 'traceId': 'abcd-123', 'timestamp': '2022-12-11T08:00:00', 'spanId': 'span-123', 'commit': '21cds342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Server Error', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-qddyz-32334', 'timestamp': '2022-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Resource Created', 'level': 'info', 'resourceId': 'server-1234675', 'traceId': 'rfvgrgc-qddyz-32334', 'timestamp': '2022-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Successfully updated', 'level': 'info', 'resourceId': 'server-1234675', 'traceId': 'rfvgrgc-qdfddddddyz-32334', 'timestamp': '2022-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Failed to connect to DB', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-xyz-123', 'timestamp': '2023-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Server Error', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-xyz-32334', 'timestamp': '2023-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+~/dev-projects/november-2023-hiring-muskan399 $ python3 managment/command_line_cli.py
+
+=============================================================
+Hello! Use this CLI to filter,search,sort and groupby
+=============================================================
+
+Enter start time (e.g., 2020-02-01T00:00:00) [Default: 2020-02-01T00:00:00]: 2021-01-01T00:00:00                                                   
+Enter end time (e.g., 2020-02-05T00:00:00) [Default: 2024-02-05T00:00:00]: 2024-01-01T00:00:00
+Enter group_by (e.g., level) [Press Enter to skip]: 
+Enter fields (e.g., message,level) [Default: message,level,resourceId,traceId,spanId,commit,parentResourceId,timestamp]: 
+Enter sort (e.g., timestamp) [Default: timestamp]:          
+Enter page[limit] [Default: 10]: 
+Enter the project id [Default: 1]: 
+
+Enter filter name (or press Enter to finish):
+Allowed filters are:
+1. level(equals,not equals, contains, not contains)
+2. message(equals, not equals, contains, not contains)
+3. resourceId(equals, not equals)
+4. traceId(equals, not equals)
+5. spanId(equals, not equals)
+6. commit(equals, not equals)
+7. parentResourceId(equals, not equals)
+level
+Enter filter type (EQUALS, NOT EQUALS, CONTAINS, NOT CONTAINS): error
+Invalid filter type. Please enter a valid filter type.
+Enter filter type (EQUALS, NOT EQUALS, CONTAINS, NOT CONTAINS): equals
+Enter filter value for level [EQUALS]: error
+
+Enter filter name (or press Enter to finish):
+Allowed filters are:
+1. level(equals,not equals, contains, not contains)
+2. message(equals, not equals, contains, not contains)
+3. resourceId(equals, not equals)
+4. traceId(equals, not equals)
+5. spanId(equals, not equals)
+6. commit(equals, not equals)
+7. parentResourceId(equals, not equals)
+message
+Enter filter type (EQUALS, NOT EQUALS, CONTAINS, NOT CONTAINS): contains
+Enter filter value for message [CONTAINS]: ser
+
+Enter filter name (or press Enter to finish):
+Allowed filters are:
+1. level(equals,not equals, contains, not contains)
+2. message(equals, not equals, contains, not contains)
+3. resourceId(equals, not equals)
+4. traceId(equals, not equals)
+5. spanId(equals, not equals)
+6. commit(equals, not equals)
+7. parentResourceId(equals, not equals)
+
+API call successful(Note: Records are paginated)
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Server Error', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-qddyz-32334', 'timestamp': '2022-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+log_events : {'parentResourceId': 'server-0987', 'idps_message': 'Server Error', 'level': 'error', 'resourceId': 'server-1234675', 'traceId': 'abc-xyz-32334', 'timestamp': '2023-12-16T08:00:00', 'spanId': 'span-456', 'commit': '5e5342f'}
+ ```
+  
+</details>
+<details>
+  <summary>With Groupby: groupby=level</summary>
+  
+ ```
+=============================================================
+Hello! Use this CLI to filter,search,sort and groupby
+=============================================================
+
+Enter start time (e.g., 2020-02-01T00:00:00) [Default: 2020-02-01T00:00:00]: 
+Enter end time (e.g., 2020-02-05T00:00:00) [Default: 2024-02-05T00:00:00]: 
+Enter group_by (e.g., level) [Press Enter to skip]: level
+Enter sort (e.g., count) [Default: count(with groupby)]: 
+Enter page[limit] [Default: 10]: 
+Enter the project id [Default: 1]: 
+
+Enter filter name (or press Enter to finish):
+Allowed filters are:
+1. level(equals,not equals, contains, not contains)
+2. message(equals, not equals, contains, not contains)
+3. resourceId(equals, not equals)
+4. traceId(equals, not equals)
+5. spanId(equals, not equals)
+6. commit(equals, not equals)
+7. parentResourceId(equals, not equals)
+
+API call successful(Note: Records are paginated)
+log_events : {'level': 'info', 'count': 3}
+log_events : {'level': 'error', 'count': 3}
 
 
-
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+ ```
+  
+</details>
+Similarly we have other combinations for filter+groupby, multi-filters, sort and between timerange.
 
 
 <!-- ROADMAP -->
-## Roadmap
+## Improvements
 
-- [x] Add Changelog
-- [x] Add back to top links
-- [ ] Add Additional Templates w/ Examples
-- [ ] Add "components" document to easily copy & paste sections of the readme
-- [ ] Multi-language Support
-    - [ ] Chinese
-    - [ ] Spanish
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+- [ ] Instead of this CLI, UI would have been a better option with all the timerange, groupby and filter type dropdown options.
+- [ ] Addition of Unittests.
+- [ ] Instead of RDS, databases like Redshift would have been better.
 
 
 <!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE.txt` for more information.
@@ -210,62 +401,3 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 
 <!-- CONTACT -->
-## Contact
-
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
-
-* [Choose an Open Source License](https://choosealicense.com)
-* [GitHub Emoji Cheat Sheet](https://www.webpagefx.com/tools/emoji-cheat-sheet)
-* [Malven's Flexbox Cheatsheet](https://flexbox.malven.co/)
-* [Malven's Grid Cheatsheet](https://grid.malven.co/)
-* [Img Shields](https://shields.io)
-* [GitHub Pages](https://pages.github.com)
-* [Font Awesome](https://fontawesome.com)
-* [React Icons](https://react-icons.github.io/react-icons/search)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/othneildrew
-[product-screenshot]: images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com 
